@@ -226,9 +226,18 @@ function Index() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div>
+    <div className="rounded-xl border border-border bg-card/50 p-3 backdrop-blur">
       <div className="text-xl font-bold sm:text-2xl">{value}</div>
-      <div className="text-[11px] uppercase tracking-wider text-primary-foreground/70">{label}</div>
+      <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">{label}</div>
+    </div>
+  );
+}
+
+function MiniStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-border/60 bg-background/40 px-2 py-1.5">
+      <div className="text-sm font-bold">{value}</div>
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
     </div>
   );
 }
