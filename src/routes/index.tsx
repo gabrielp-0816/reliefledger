@@ -46,38 +46,43 @@ function Index() {
       <SiteHeader />
 
       {/* Hero */}
-      <section className="bg-hero-gradient text-primary-foreground">
-        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
-          <div className="grid items-center gap-10 lg:grid-cols-[1.2fr_1fr]">
+      <section className="relative overflow-hidden border-b border-border bg-hero-gradient">
+        <div className="absolute inset-0 bg-grid-faint opacity-40" />
+        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
+          <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold backdrop-blur ring-soft">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--alert)] opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--alert)]" />
                 </span>
-                {critical.length} active critical emergencies
+                <span className="text-foreground/90">{critical.length} active critical emergencies</span>
               </div>
-              <h1 className="mt-4 text-4xl font-black leading-[1.05] sm:text-5xl lg:text-6xl">
-                When disaster strikes, every minute and every dollar counts.
+              <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] sm:text-5xl lg:text-[64px]">
+                When disaster strikes,
+                <br />
+                <span className="bg-linear-to-r from-[color:var(--primary)] via-[color:var(--verified)] to-[color:var(--relief)] bg-clip-text text-transparent">
+                  every second is accounted for.
+                </span>
               </h1>
-              <p className="mt-5 max-w-xl text-base text-primary-foreground/85 sm:text-lg">
-                ReliefLedger routes donations <strong>only</strong> to verified local governments and accredited NGOs — and shows you exactly how funds are spent, phase by phase.
+              <p className="mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">
+                ReliefLedger routes donations <strong className="text-foreground">only</strong> to verified local governments and accredited NGOs — with a public ledger showing exactly how funds move, phase by phase.
               </p>
-              <div className="mt-7 flex flex-wrap gap-3">
+              <div className="mt-8 flex flex-wrap gap-3">
                 <a
                   href="#disasters"
-                  className="inline-flex items-center justify-center rounded-xl bg-white px-5 py-3 text-sm font-semibold text-primary shadow-trust transition hover:bg-white/90"
+                  className="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-trust transition hover:brightness-110"
                 >
                   See active disasters
                 </a>
                 <Link
                   to="/start"
-                  className="inline-flex items-center justify-center rounded-xl border border-white/30 bg-white/10 px-5 py-3 text-sm font-semibold text-primary-foreground backdrop-blur transition hover:bg-white/20"
+                  className="inline-flex items-center justify-center rounded-xl border border-border bg-card/60 px-5 py-3 text-sm font-semibold text-foreground backdrop-blur transition hover:bg-card"
                 >
                   Start a relief fund
                 </Link>
               </div>
-              <div className="mt-8 grid max-w-md grid-cols-3 gap-4 text-sm">
+              <div className="mt-10 grid max-w-lg grid-cols-3 gap-3 text-sm">
                 <Stat label="Raised this month" value={fmtUSD(totalRaised)} />
                 <Stat label="Active donors" value={totalDonors.toLocaleString()} />
                 <Stat label="Verified responders" value="48" />
@@ -89,22 +94,28 @@ function Index() {
               <Link
                 to="/campaign/$id"
                 params={{ id: critical[0].id }}
-                className="group block overflow-hidden rounded-3xl border border-white/20 bg-white/10 p-5 backdrop-blur transition hover:bg-white/15"
+                className="group relative block overflow-hidden rounded-3xl border border-border bg-card-elevated p-6 shadow-card transition hover:border-[color:var(--alert)]/40"
               >
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[color:var(--alert)]">
+                <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-[color:var(--alert)]/60 to-transparent" />
+                <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--alert)]">
                   <AlertTriangle className="h-4 w-4" />
                   Urgent · responding now
                 </div>
-                <h3 className="mt-2 text-2xl font-bold leading-tight">{critical[0].title}</h3>
-                <p className="mt-1 text-sm text-primary-foreground/80">{critical[0].location} · {critical[0].organizer}</p>
-                <div className="mt-4">
+                <h3 className="mt-3 text-2xl font-bold leading-tight">{critical[0].title}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{critical[0].location} · {critical[0].organizer}</p>
+                <div className="mt-5">
                   <ProgressBar value={Math.round((critical[0].raised / critical[0].goal) * 100)} tone="alert" />
                   <div className="mt-2 flex justify-between text-sm">
                     <span className="font-semibold">{fmtUSD(critical[0].raised)}</span>
-                    <span className="text-primary-foreground/80">of {fmtUSD(critical[0].goal)}</span>
+                    <span className="text-muted-foreground">of {fmtUSD(critical[0].goal)}</span>
                   </div>
                 </div>
-                <div className="mt-4 inline-flex items-center justify-center rounded-lg bg-[color:var(--alert)] px-4 py-2 text-sm font-semibold text-[color:var(--alert-foreground)] transition group-hover:brightness-110">
+                <div className="mt-5 grid grid-cols-3 gap-2 text-center">
+                  <MiniStat label="Donors" value={critical[0].donors.toLocaleString()} />
+                  <MiniStat label="Affected" value={critical[0].beneficiaries.toLocaleString()} />
+                  <MiniStat label="Day" value={`${critical[0].startedDaysAgo}`} />
+                </div>
+                <div className="mt-5 inline-flex items-center justify-center rounded-lg bg-[color:var(--alert)] px-4 py-2 text-sm font-semibold text-[color:var(--alert-foreground)] transition group-hover:brightness-110">
                   Donate to this emergency →
                 </div>
               </Link>
@@ -112,6 +123,7 @@ function Index() {
           </div>
         </div>
       </section>
+
 
       {/* Filters + grid */}
       <section id="disasters" className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
