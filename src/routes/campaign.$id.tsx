@@ -4,7 +4,7 @@ import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { ProgressBar } from "@/components/progress-bar";
 import { fmtUSD } from "@/components/campaign-card";
 import { DonateModal } from "@/components/donate-modal";
-import { disasterById } from "@/lib/disasters";
+import { disasterById, type Disaster } from "@/lib/disasters";
 import {
   ShieldCheck, MapPin, Users, Clock, CheckCircle2, Circle, Loader2,
   Lock, FileText, AlertTriangle, ArrowLeft,
