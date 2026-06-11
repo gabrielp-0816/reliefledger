@@ -41,7 +41,7 @@ export const Route = createFileRoute("/campaign/$id")({
 type Tab = "story" | "updates" | "donors" | "reports";
 
 function CampaignPage() {
-  const { d } = Route.useLoaderData();
+  const { d } = Route.useLoaderData() as { d: Disaster };
   const [tab, setTab] = useState<Tab>("story");
   const [open, setOpen] = useState(false);
   const pct = Math.round((d.raised / d.goal) * 100);
