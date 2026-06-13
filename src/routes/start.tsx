@@ -98,7 +98,7 @@ function StartPage() {
             Our trust & safety team typically reviews new funds within 6 hours during active emergencies. You'll receive an email when your fund is live.
           </p>
           <Link to="/" className="mt-8 inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-trust hover:bg-primary/90">
-            Back to active disasters
+            Back to home
           </Link>
         </div>
         <SiteFooter />
