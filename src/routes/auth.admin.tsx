@@ -34,7 +34,7 @@ function AdminAuth() {
     e.preventDefault();
     setLoading(true);
     const { data, error } = await supabase.auth.signInWithPassword({ email: form.email, password: form.password });
-    if (error) { setLoading(false); return toast.error(error.message); }
+    if (error) { setLoading(false); return toast.error(formatAuthError(error.message)); }
 
     const { data: roles } = await supabase
       .from("user_roles").select("role").eq("user_id", data.user!.id);
@@ -46,6 +46,18 @@ function AdminAuth() {
     }
     toast.success("Welcome back, admin");
     navigate({ to: "/admin" });
+  };
+
+  const onForgotPassword = async () => {
+    const email = form.email.trim();
+    if (!email) return toast.error("Enter your email first.");
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setLoading(false);
+    if (error) return toast.error(error.message);
+    toast.success("Check your email for a password reset link.");
   };
 
   const onSignup = async (e: React.FormEvent) => {
@@ -63,6 +75,9 @@ function AdminAuth() {
     });
     setLoading(false);
     if (error) return toast.error(error.message);
+    if (data.user && data.user.identities?.length === 0) {
+      return toast.error("That email already has an account. Sign in or reset your password.");
+    }
     toast.success(data.session ? "Admin account created" : "Check your email to confirm your account");
     if (data.session) navigate({ to: "/admin" });
   };
@@ -102,6 +117,12 @@ function AdminAuth() {
               <input type="password" required minLength={8} value={form.password} onChange={set("password")} className={inputCls} />
             </Field>
 
+            {mode === "login" && (
+              <button type="button" onClick={onForgotPassword} className="text-xs font-semibold text-orange-400 hover:text-orange-300">
+                Forgot password?
+              </button>
+            )}
+
             <button
               type="submit"
               disabled={loading}
@@ -137,4 +158,11 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       {children}
     </label>
   );
+}
+
+function formatAuthError(message: string) {
+  if (message.toLowerCase().includes("invalid login credentials")) {
+    return "Invalid email or password. If this account already exists, reset the password.";
+  }
+  return message;
 }
