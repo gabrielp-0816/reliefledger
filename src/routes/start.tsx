@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
