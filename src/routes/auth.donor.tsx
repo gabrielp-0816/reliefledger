@@ -130,10 +130,7 @@ function DonorAuth() {
           .from("valid-ids")
           .upload(path, validId, { upsert: true });
         if (!upErr) {
-          await supabase
-            .from("profiles")
-            .update({ valid_id_url: path })
-            .eq("id", user.id);
+          await supabase.from("profiles").update({ valid_id_url: path }).eq("id", user.id);
         }
       }
     }
@@ -161,7 +158,9 @@ function DonorAuth() {
             {mode === "login" ? "Welcome back" : "Create your donor account"}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {mode === "login" ? "Sign in to support active relief funds." : "Help us verify donors with a few details."}
+            {mode === "login"
+              ? "Sign in to support active relief funds."
+              : "Help us verify donors with a few details."}
           </p>
 
           <button
@@ -179,14 +178,31 @@ function DonorAuth() {
 
           <form onSubmit={mode === "login" ? onLogin : onSignup} className="space-y-3">
             <Field label="Email">
-              <input type="email" required value={form.email} onChange={set("email")} className={inputCls} />
+              <input
+                type="email"
+                required
+                value={form.email}
+                onChange={set("email")}
+                className={inputCls}
+              />
             </Field>
             <Field label="Password">
-              <input type="password" required minLength={8} value={form.password} onChange={set("password")} className={inputCls} />
+              <input
+                type="password"
+                required
+                minLength={8}
+                value={form.password}
+                onChange={set("password")}
+                className={inputCls}
+              />
             </Field>
 
             {mode === "login" && (
-              <button type="button" onClick={onForgotPassword} className="text-xs font-semibold text-indigo-400 hover:text-indigo-300">
+              <button
+                type="button"
+                onClick={onForgotPassword}
+                className="text-xs font-semibold text-indigo-400 hover:text-indigo-300"
+              >
                 Forgot password?
               </button>
             )}
@@ -194,20 +210,44 @@ function DonorAuth() {
             {mode === "signup" && (
               <>
                 <Field label="Full name">
-                  <input required value={form.full_name} onChange={set("full_name")} className={inputCls} />
+                  <input
+                    required
+                    value={form.full_name}
+                    onChange={set("full_name")}
+                    className={inputCls}
+                  />
                 </Field>
                 <Field label="Phone">
                   <input required value={form.phone} onChange={set("phone")} className={inputCls} />
                 </Field>
                 <Field label="Address">
-                  <input required value={form.address} onChange={set("address")} className={inputCls} />
+                  <input
+                    required
+                    value={form.address}
+                    onChange={set("address")}
+                    className={inputCls}
+                  />
                 </Field>
                 <div className="grid grid-cols-2 gap-3">
                   <Field label="Age">
-                    <input type="number" min={13} max={120} required value={form.age} onChange={set("age")} className={inputCls} />
+                    <input
+                      type="number"
+                      min={13}
+                      max={120}
+                      required
+                      value={form.age}
+                      onChange={set("age")}
+                      className={inputCls}
+                    />
                   </Field>
                   <Field label="Birthdate">
-                    <input type="date" required value={form.birthdate} onChange={set("birthdate")} className={inputCls} />
+                    <input
+                      type="date"
+                      required
+                      value={form.birthdate}
+                      onChange={set("birthdate")}
+                      className={inputCls}
+                    />
                   </Field>
                 </div>
                 <Field label="Valid ID (image)">
@@ -233,21 +273,28 @@ function DonorAuth() {
 
           <p className="mt-5 text-center text-sm text-muted-foreground">
             {mode === "login" ? "New here?" : "Already have an account?"}{" "}
-            <button onClick={() => setMode(mode === "login" ? "signup" : "login")} className="font-semibold text-indigo-400 hover:text-indigo-300">
+            <button
+              onClick={() => setMode(mode === "login" ? "signup" : "login")}
+              className="font-semibold text-indigo-400 hover:text-indigo-300"
+            >
               {mode === "login" ? "Create donor account" : "Sign in"}
             </button>
           </p>
         </div>
 
         <p className="mt-4 text-center text-xs text-muted-foreground">
-          Admin? <Link to="/auth/admin" className="text-orange-400 hover:text-orange-300">Use the admin sign in</Link>
+          Admin?{" "}
+          <Link to="/auth/admin" className="text-orange-400 hover:text-orange-300">
+            Use the admin sign in
+          </Link>
         </p>
       </div>
     </div>
   );
 }
 
-const inputCls = "w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none placeholder:text-muted-foreground focus:border-indigo-500/60 focus:ring-2 focus:ring-indigo-500/20";
+const inputCls =
+  "w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none placeholder:text-muted-foreground focus:border-indigo-500/60 focus:ring-2 focus:ring-indigo-500/20";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -261,10 +308,22 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function GoogleIcon() {
   return (
     <svg className="h-4 w-4" viewBox="0 0 48 48">
-      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.1 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.4 1.1 7.4 2.8l5.7-5.7C33.6 6.7 29.1 5 24 5 13.5 5 5 13.5 5 24s8.5 19 19 19 19-8.5 19-19c0-1.2-.1-2.4-.4-3.5z"/>
-      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c2.8 0 5.4 1.1 7.4 2.8l5.7-5.7C33.6 6.7 29.1 5 24 5 16.3 5 9.7 9.3 6.3 14.7z"/>
-      <path fill="#4CAF50" d="M24 43c5 0 9.5-1.6 13-4.4l-6-5.1c-1.9 1.3-4.3 2-7 2-5.3 0-9.7-2.9-11.3-7l-6.5 5C9.5 38.6 16.2 43 24 43z"/>
-      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.7 2-2 3.7-3.7 5l6 5.1C41.9 35.5 45 30.2 45 24c0-1.2-.1-2.4-.4-3.5z"/>
+      <path
+        fill="#FFC107"
+        d="M43.6 20.5H42V20H24v8h11.3C33.7 32.1 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.4 1.1 7.4 2.8l5.7-5.7C33.6 6.7 29.1 5 24 5 13.5 5 5 13.5 5 24s8.5 19 19 19 19-8.5 19-19c0-1.2-.1-2.4-.4-3.5z"
+      />
+      <path
+        fill="#FF3D00"
+        d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c2.8 0 5.4 1.1 7.4 2.8l5.7-5.7C33.6 6.7 29.1 5 24 5 16.3 5 9.7 9.3 6.3 14.7z"
+      />
+      <path
+        fill="#4CAF50"
+        d="M24 43c5 0 9.5-1.6 13-4.4l-6-5.1c-1.9 1.3-4.3 2-7 2-5.3 0-9.7-2.9-11.3-7l-6.5 5C9.5 38.6 16.2 43 24 43z"
+      />
+      <path
+        fill="#1976D2"
+        d="M43.6 20.5H42V20H24v8h11.3c-.7 2-2 3.7-3.7 5l6 5.1C41.9 35.5 45 30.2 45 24c0-1.2-.1-2.4-.4-3.5z"
+      />
     </svg>
   );
 }
