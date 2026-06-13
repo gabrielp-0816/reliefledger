@@ -53,9 +53,21 @@ function DonorAuth() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email: form.email, password: form.password });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(formatAuthError(error.message));
     toast.success("Welcome back");
     navigate({ to: "/dashboard" });
+  };
+
+  const onForgotPassword = async () => {
+    const email = form.email.trim();
+    if (!email) return toast.error("Enter your email first.");
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setLoading(false);
+    if (error) return toast.error(error.message);
+    toast.success("Check your email for a password reset link.");
   };
 
   const onSignup = async (e: React.FormEvent) => {
@@ -77,6 +89,11 @@ function DonorAuth() {
       },
     });
     if (error) { setLoading(false); return toast.error(error.message); }
+
+    if (data.user && data.user.identities?.length === 0) {
+      setLoading(false);
+      return toast.error("That email already has an account. Sign in with Google or reset your password.");
+    }
 
     const user = data.user;
     // Persist age/birthdate + upload valid ID if signed-in immediately
@@ -142,6 +159,12 @@ function DonorAuth() {
             <Field label="Password">
               <input type="password" required minLength={8} value={form.password} onChange={set("password")} className={inputCls} />
             </Field>
+
+            {mode === "login" && (
+              <button type="button" onClick={onForgotPassword} className="text-xs font-semibold text-indigo-400 hover:text-indigo-300">
+                Forgot password?
+              </button>
+            )}
 
             {mode === "signup" && (
               <>
@@ -219,4 +242,11 @@ function GoogleIcon() {
       <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.7 2-2 3.7-3.7 5l6 5.1C41.9 35.5 45 30.2 45 24c0-1.2-.1-2.4-.4-3.5z"/>
     </svg>
   );
+}
+
+function formatAuthError(message: string) {
+  if (message.toLowerCase().includes("invalid login credentials")) {
+    return "Invalid email or password. If you used Google before, continue with Google or reset your password.";
+  }
+  return message;
 }
