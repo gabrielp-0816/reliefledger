@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ShieldCheck, HeartHandshake, LayoutDashboard, LogIn } from "lucide-react";
+import { ShieldCheck, HeartHandshake, LayoutDashboard, LogIn, PlusCircle } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
 export function SiteHeader() {
@@ -19,11 +19,11 @@ export function SiteHeader() {
           </div>
         </Link>
         <nav className="hidden items-center gap-1 md:flex">
-          <Link to="/" className="rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-secondary hover:text-foreground">
-            Active Disasters
-          </Link>
           <a href="/#how" className="rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-secondary">
             How It Works
+          </a>
+          <a href="/#responders" className="rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-secondary">
+            For Responders
           </a>
           <a href="/#safety" className="rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-secondary">
             Trust & Safety
@@ -35,27 +35,29 @@ export function SiteHeader() {
             Verified Partners Only
           </div>
           {user ? (
-            <Link
-              to={role === "admin" ? "/admin" : "/dashboard"}
-              className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 text-sm font-semibold text-primary-foreground shadow-trust transition hover:bg-primary/90"
-            >
-              <LayoutDashboard className="h-4 w-4" /> Dashboard
-            </Link>
+            <div className="flex items-center gap-2">
+              {role === "admin" && (
+                <Link
+                  to="/start"
+                  className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-border bg-secondary px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-secondary/80"
+                >
+                  <PlusCircle className="h-4 w-4" /> Start Fund
+                </Link>
+              )}
+              <Link
+                to={role === "admin" ? "/admin" : "/dashboard"}
+                className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 text-sm font-semibold text-primary-foreground shadow-trust transition hover:bg-primary/90"
+              >
+                <LayoutDashboard className="h-4 w-4" /> Dashboard
+              </Link>
+            </div>
           ) : (
-            <>
-              <Link
-                to="/auth"
-                className="hidden items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-secondary sm:inline-flex"
-              >
-                <LogIn className="h-4 w-4" /> Sign in
-              </Link>
-              <Link
-                to="/start"
-                className="inline-flex shrink-0 items-center justify-center rounded-lg bg-primary px-3.5 py-2 text-sm font-semibold text-primary-foreground shadow-trust transition hover:bg-primary/90"
-              >
-                Start a Relief Fund
-              </Link>
-            </>
+            <Link
+              to="/auth"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-secondary"
+            >
+              <LogIn className="h-4 w-4" /> Sign in
+            </Link>
           )}
         </div>
       </div>
