@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { ShieldCheck, HeartHandshake } from "lucide-react";
+import { ShieldCheck, HeartHandshake, LayoutDashboard, LogIn } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 export function SiteHeader() {
+  const { user, role } = useAuth();
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
@@ -32,12 +34,29 @@ export function SiteHeader() {
             <ShieldCheck className="h-3.5 w-3.5" />
             Verified Partners Only
           </div>
-          <Link
-            to="/start"
-            className="inline-flex shrink-0 items-center justify-center rounded-lg bg-primary px-3.5 py-2 text-sm font-semibold text-primary-foreground shadow-trust transition hover:bg-primary/90"
-          >
-            Start a Relief Fund
-          </Link>
+          {user ? (
+            <Link
+              to={role === "admin" ? "/admin" : "/dashboard"}
+              className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 text-sm font-semibold text-primary-foreground shadow-trust transition hover:bg-primary/90"
+            >
+              <LayoutDashboard className="h-4 w-4" /> Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link
+                to="/auth"
+                className="hidden items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-secondary sm:inline-flex"
+              >
+                <LogIn className="h-4 w-4" /> Sign in
+              </Link>
+              <Link
+                to="/start"
+                className="inline-flex shrink-0 items-center justify-center rounded-lg bg-primary px-3.5 py-2 text-sm font-semibold text-primary-foreground shadow-trust transition hover:bg-primary/90"
+              >
+                Start a Relief Fund
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
