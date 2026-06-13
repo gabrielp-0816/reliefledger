@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -54,9 +55,18 @@ const steps = [
 ];
 
 function StartPage() {
+  const navigate = useNavigate();
+  const { user, role, loading: authLoading } = useAuth();
   const [step, setStep] = useState(1);
   const [f, setF] = useState<Form>(initial);
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user || role !== "admin") {
+      navigate({ to: "/" });
+    }
+  }, [authLoading, user, role, navigate]);
 
   const upd = <K extends keyof Form>(k: K, v: Form[K]) => setF((p) => ({ ...p, [k]: v }));
   const allocTotal = f.allocations.reduce((s, a) => s + (Number(a.pct) || 0), 0);
@@ -66,6 +76,14 @@ function StartPage() {
     (step === 2 && f.location.trim() && Number(f.goal) > 0 && f.story.trim().length > 30) ||
     (step === 3 && allocTotal === 100) ||
     (step === 4 && f.permitName.trim().length > 0);
+
+  if (authLoading || !user || role !== "admin") {
+    return (
+      <div className="grid min-h-screen place-items-center bg-background">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
+      </div>
+    );
+  }
 
   if (submitted) {
     return (
@@ -80,7 +98,7 @@ function StartPage() {
             Our trust & safety team typically reviews new funds within 6 hours during active emergencies. You'll receive an email when your fund is live.
           </p>
           <Link to="/" className="mt-8 inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-trust hover:bg-primary/90">
-            Back to active disasters
+            Back to home
           </Link>
         </div>
         <SiteFooter />
