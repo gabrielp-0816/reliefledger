@@ -1,46 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
-import { CampaignCard, fmtUSD } from "@/components/campaign-card";
-import { disasters } from "@/lib/disasters";
-import { AlertTriangle, Search, ShieldCheck, Eye, Layers, HandCoins, MapPin, ArrowRight } from "lucide-react";
+import { ShieldCheck, Eye, Layers, HandCoins, HeartHandshake, Globe, Lock, Receipt } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "ReliefLedger — Verified Disaster Relief, Phase by Phase" },
-      { name: "description", content: "A transparent disaster relief ledger. Browse verified emergencies, donate to specific phases, and watch every disbursement publicly." },
+      { name: "description", content: "A transparent disaster relief ledger. Verified responders publish funds; donors give to tracked phases and watch every disbursement publicly." },
     ],
   }),
   component: Index,
 });
 
-const types = ["All", "Typhoon", "Flood", "Earthquake", "Wildfire", "Landslide"] as const;
-const urgencies = ["All", "Critical", "High", "Ongoing"] as const;
-
 function Index() {
-  const [q, setQ] = useState("");
-  const [type, setType] = useState<(typeof types)[number]>("All");
-  const [urg, setUrg] = useState<(typeof urgencies)[number]>("All");
-
-  const filtered = useMemo(() => {
-    return disasters.filter((d) => {
-      const matchesQ = !q ||
-        d.title.toLowerCase().includes(q.toLowerCase()) ||
-        d.location.toLowerCase().includes(q.toLowerCase()) ||
-        d.organizer.toLowerCase().includes(q.toLowerCase());
-      const matchesType = type === "All" || d.type === type;
-      const matchesUrg = urg === "All" || d.urgency === urg;
-      return matchesQ && matchesType && matchesUrg;
-    });
-  }, [q, type, urg]);
-
-  const critical = disasters.filter((d) => d.urgency === "Critical");
-  const featured = critical[0];
-  const featuredPct = featured ? Math.round((featured.raised / featured.goal) * 100) : 0;
-  const totalRaised = disasters.reduce((s, d) => s + d.raised, 0);
-  const totalDonors = disasters.reduce((s, d) => s + d.donors, 0);
-
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-indigo-500/30">
       <SiteHeader />
@@ -52,160 +24,79 @@ function Index() {
 
         <div className="relative mx-auto max-w-7xl px-6 pt-12 pb-24">
           <div className="grid items-center gap-16 lg:grid-cols-2">
-            {/* Hero content */}
             <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-orange-400">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-orange-500" />
-                </span>
-                {critical.length} active critical emergencies
+              <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-indigo-400">
+                <HeartHandshake className="h-4 w-4" />
+                Transparent disaster relief
               </div>
 
               <h1 className="font-display text-5xl font-extrabold leading-[1.05] tracking-tight md:text-7xl">
-                When disaster strikes,
+                Donations with
                 <span className="block bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">
-                  every second is accounted for.
+                  nothing to hide.
                 </span>
               </h1>
 
               <p className="max-w-lg text-lg leading-relaxed text-slate-400">
-                ReliefLedger routes donations <span className="font-semibold text-white">only</span> to verified local governments and accredited NGOs — with a public ledger showing exactly how funds move.
+                ReliefLedger is a nonprofit platform that connects verified disaster responders with donors who want real accountability. Every fund is published by a credentialed organization. Every donation is tracked by phase. Every disbursement is public.
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <a
-                  href="#disasters"
+                <Link
+                  to="/auth"
                   className="inline-flex items-center justify-center rounded-2xl bg-indigo-600 px-8 py-4 text-lg font-bold text-white shadow-lg shadow-indigo-600/25 transition-all hover:bg-indigo-500 active:scale-95"
                 >
-                  See active disasters
-                </a>
-                <Link
-                  to="/start"
+                  Become a donor
+                </Link>
+                <a
+                  href="#how"
                   className="inline-flex items-center justify-center rounded-2xl border border-slate-700 bg-slate-900/50 px-8 py-4 text-lg font-bold text-slate-300 transition-all hover:border-slate-500 active:scale-95"
                 >
-                  Start a relief fund
-                </Link>
+                  How it works
+                </a>
               </div>
 
               <div className="grid max-w-md grid-cols-3 gap-3 pt-4">
-                <Stat label="Raised" value={fmtUSD(totalRaised)} />
-                <Stat label="Donors" value={totalDonors.toLocaleString()} />
-                <Stat label="Responders" value="48" />
+                <Stat label="Verified responders" value="Governments & NGOs" />
+                <Stat label="Donation tracking" value="Phase by phase" />
+                <Stat label="Ledger" value="Fully public" />
               </div>
             </div>
 
-            {/* Urgent campaign card */}
-            {featured && (
-              <div className="relative">
-                <div className="relative z-10 rounded-[40px] border border-white/10 bg-slate-900/40 p-8 shadow-2xl backdrop-blur-xl">
-                  <div className="mb-6 flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-orange-400" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-orange-400">
-                      Urgent · Responding Now
-                    </span>
-                  </div>
-
-                  <h3 className="mb-3 font-display text-3xl font-bold leading-tight">{featured.title}</h3>
-                  <p className="mb-10 flex items-center gap-2 text-sm text-slate-400">
-                    <MapPin className="h-4 w-4" />
-                    {featured.location} · {featured.organizer}
-                  </p>
-
-                  <div className="mb-10 space-y-4">
-                    <div className="flex items-end justify-between">
-                      <div>
-                        <div className="font-display text-3xl font-extrabold">{fmtUSD(featured.raised)}</div>
-                        <div className="text-xs font-bold uppercase tracking-wider text-slate-500">Raised so far</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-bold text-slate-200">Target {fmtUSD(featured.goal)}</div>
-                        <div className="text-xs font-bold text-indigo-400">{featuredPct}% funded</div>
-                      </div>
-                    </div>
-                    <div className="h-3 w-full overflow-hidden rounded-full bg-slate-800">
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-orange-400 to-orange-600 shadow-[0_0_15px_rgba(249,115,22,0.3)] transition-[width] duration-700"
-                        style={{ width: `${featuredPct}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mb-10 grid grid-cols-3 gap-3">
-                    <MiniStat label="Donors" value={featured.donors.toLocaleString()} />
-                    <MiniStat label="Affected" value={featured.beneficiaries.toLocaleString()} />
-                    <MiniStat label="Active" value={`${featured.startedDaysAgo}d`} />
-                  </div>
-
-                  <Link
-                    to="/campaign/$id"
-                    params={{ id: featured.id }}
-                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-orange-500 py-5 font-bold text-slate-900 shadow-xl shadow-orange-500/20 transition-all hover:bg-orange-600 active:scale-[0.98]"
-                  >
-                    Donate to this emergency
-                    <ArrowRight className="h-5 w-5" />
-                  </Link>
+            <div className="relative">
+              <div className="relative z-10 rounded-[40px] border border-white/10 bg-slate-900/40 p-8 shadow-2xl backdrop-blur-xl">
+                <div className="mb-6 flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-indigo-400" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-400">
+                    For donors & responders
+                  </span>
                 </div>
+
+                <h3 className="mb-3 font-display text-2xl font-bold leading-tight">What ReliefLedger does</h3>
+                <p className="mb-6 text-sm text-slate-400">
+                  We bridge the trust gap between communities in crisis and the people who want to help.
+                </p>
+
+                <ul className="space-y-3">
+                  {[
+                    ["Verified-only funds", "Only local governments and accredited NGOs can publish a relief fund."],
+                    ["Phase-based giving", "Donors contribute to specific milestones — food, shelter, medical, rebuild — not vague promises."],
+                    ["Public disbursements", "Every withdrawal is published with receipts, photos, and beneficiary counts."],
+                    ["Donor protection", "If a fund is paused, undistributed money is returned automatically."],
+                  ].map(([t, b]) => (
+                    <li key={t} className="flex gap-3 rounded-2xl border border-white/5 bg-slate-950/40 p-4">
+                      <Lock className="mt-0.5 h-5 w-5 shrink-0 text-indigo-400" />
+                      <div>
+                        <div className="font-semibold text-sm">{t}</div>
+                        <div className="text-xs text-slate-400">{b}</div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            )}
+            </div>
           </div>
         </div>
-      </section>
-
-      {/* Filters + grid */}
-      <section id="disasters" className="mx-auto max-w-7xl px-6 pb-32">
-        <div className="mb-12 flex flex-col gap-6 rounded-[24px] border border-white/5 bg-slate-900/50 p-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-wrap gap-2">
-            {types.map((t) => (
-              <button
-                key={t}
-                onClick={() => setType(t)}
-                className={`rounded-xl px-6 py-2.5 text-sm font-bold transition-colors ${
-                  type === t
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
-                    : "bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white"
-                }`}
-              >
-                {t === "All" ? "All Disasters" : t}
-              </button>
-            ))}
-          </div>
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-            <input
-              type="text"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Search regions, organizers…"
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 py-2.5 pl-11 pr-4 text-sm text-foreground outline-none transition-all focus:ring-2 focus:ring-indigo-500 md:w-72"
-            />
-          </div>
-        </div>
-
-        <div className="mb-8 flex flex-wrap gap-2">
-          {urgencies.map((u) => (
-            <button
-              key={u}
-              onClick={() => setUrg(u)}
-              className={`rounded-full border px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all ${
-                urg === u
-                  ? "border-indigo-500 bg-indigo-500/10 text-indigo-300"
-                  : "border-white/10 bg-transparent text-slate-500 hover:border-white/20 hover:text-slate-300"
-              }`}
-            >
-              {u === "All" ? "All urgency" : u}
-            </button>
-          ))}
-        </div>
-
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((d) => <CampaignCard key={d.id} d={d} />)}
-        </div>
-        {filtered.length === 0 && (
-          <div className="mt-10 rounded-2xl border border-dashed border-white/10 bg-slate-900/40 p-10 text-center text-slate-400">
-            No relief funds match your filters.
-          </div>
-        )}
       </section>
 
       {/* How it works */}
@@ -232,6 +123,41 @@ function Index() {
               title="Watch the money work"
               body="Every disbursement appears on the public ledger with photos, receipts, and a beneficiary count."
             />
+          </div>
+        </div>
+      </section>
+
+      {/* For responders */}
+      <section id="responders" className="mx-auto max-w-7xl px-6 py-20">
+        <div className="rounded-[32px] border border-white/5 bg-slate-900/40 p-8 backdrop-blur sm:p-12">
+          <div className="grid items-start gap-10 md:grid-cols-2">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-[color:var(--verified)]/10 px-3 py-1 text-xs font-semibold text-[color:var(--verified)]">
+                <ShieldCheck className="h-3.5 w-3.5" /> For verified responders
+              </div>
+              <h2 className="mt-3 font-display text-4xl font-extrabold tracking-tight">
+                Are you a local government or accredited NGO?
+              </h2>
+              <p className="mt-3 text-slate-400">
+                ReliefLedger is admin-managed. If your organization is verified, an admin can publish a relief fund on your behalf. Every fund goes through credential checks before going live.
+              </p>
+            </div>
+            <ul className="space-y-4">
+              {[
+                ["Submit credentials", "Provide your government ID, NGO accreditation, or operating permit for review."],
+                ["Define phases", "Break your fund into clear milestones — food, medical, shelter, rebuild — with transparent allocation percentages."],
+                ["Report publicly", "Upload receipts and field photos for every disbursement so donors can see impact in real time."],
+                ["Build trust", "Public accountability means repeat donors and stronger community support."],
+              ].map(([t, b]) => (
+                <li key={t} className="flex gap-3 rounded-2xl border border-white/5 bg-slate-950/40 p-4">
+                  <Receipt className="mt-0.5 h-5 w-5 shrink-0 text-indigo-400" />
+                  <div>
+                    <div className="font-semibold">{t}</div>
+                    <div className="text-sm text-slate-400">{b}</div>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
@@ -279,16 +205,7 @@ function Index() {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-white/5 bg-slate-900/50 p-3">
-      <div className="text-lg font-bold sm:text-xl">{value}</div>
-      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</div>
-    </div>
-  );
-}
-
-function MiniStat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-2xl border border-white/5 bg-slate-950/50 p-4 text-center">
-      <div className="text-lg font-bold">{value}</div>
+      <div className="text-sm font-bold sm:text-base">{value}</div>
       <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</div>
     </div>
   );
