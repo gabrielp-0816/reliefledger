@@ -46,7 +46,7 @@ function Index() {
                   to="/auth"
                   className="inline-flex items-center justify-center rounded-2xl bg-indigo-600 px-8 py-4 text-lg font-bold text-white shadow-lg shadow-indigo-600/25 transition-all hover:bg-indigo-500 active:scale-95"
                 >
-                  Become a donor
+                  Start Exploring
                 </Link>
                 <a
                   href="#how"
