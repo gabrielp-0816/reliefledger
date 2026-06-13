@@ -32,8 +32,13 @@ function DonorAuth() {
   const [loading, setLoading] = useState(false);
   const [validId, setValidId] = useState<File | null>(null);
   const [form, setForm] = useState({
-    email: "", password: "", full_name: "", phone: "",
-    address: "", age: "", birthdate: "",
+    email: "",
+    password: "",
+    full_name: "",
+    phone: "",
+    address: "",
+    age: "",
+    birthdate: "",
   });
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -41,7 +46,9 @@ function DonorAuth() {
 
   const onGoogle = async () => {
     setLoading(true);
-    const res = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/dashboard" });
+    const res = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin + "/dashboard",
+    });
     if (res.error) {
       toast.error(res.error.message || "Google sign-in failed");
       setLoading(false);
@@ -51,7 +58,10 @@ function DonorAuth() {
   const onLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email: form.email, password: form.password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email: form.email,
+      password: form.password,
+    });
     setLoading(false);
     if (error) return toast.error(formatAuthError(error.message));
     toast.success("Welcome back");
@@ -90,27 +100,40 @@ function DonorAuth() {
         },
       },
     });
-    if (error) { setLoading(false); return toast.error(error.message); }
+    if (error) {
+      setLoading(false);
+      return toast.error(error.message);
+    }
 
     if (data.user && data.user.identities?.length === 0) {
       setLoading(false);
-      return toast.error("That email already has an account. Sign in with Google or reset your password.");
+      return toast.error(
+        "That email already has an account. Sign in with Google or reset your password.",
+      );
     }
 
     const user = data.user;
     // Persist age/birthdate + upload valid ID if signed-in immediately
     if (user) {
-      await supabase.from("profiles").update({
-        age: parsed.data.age,
-        birthdate: parsed.data.birthdate,
-      }).eq("id", user.id);
+      await supabase
+        .from("profiles")
+        .update({
+          age: parsed.data.age,
+          birthdate: parsed.data.birthdate,
+        })
+        .eq("id", user.id);
 
       if (validId) {
         const ext = validId.name.split(".").pop() ?? "jpg";
         const path = `${user.id}/valid-id.${ext}`;
-        const { error: upErr } = await supabase.storage.from("valid-ids").upload(path, validId, { upsert: true });
+        const { error: upErr } = await supabase.storage
+          .from("valid-ids")
+          .upload(path, validId, { upsert: true });
         if (!upErr) {
-          await supabase.from("profiles").update({ valid_id_url: path }).eq("id", user.id);
+          await supabase
+            .from("profiles")
+            .update({ valid_id_url: path })
+            .eq("id", user.id);
         }
       }
     }
