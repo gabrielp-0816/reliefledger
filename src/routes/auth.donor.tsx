@@ -84,6 +84,8 @@ function DonorAuth() {
           full_name: parsed.data.full_name,
           phone: parsed.data.phone,
           address: parsed.data.address,
+          age: parsed.data.age,
+          birthdate: parsed.data.birthdate,
           role: "donor",
         },
       },
